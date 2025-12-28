@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Arma 3 RHS DMR Helper (No Install)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    body { font-family: "Inter", system-ui, -apple-system, sans-serif; margin: 0; padding: 0; background: #0f172a; color: #e2e8f0; }
+    header { padding: 1.5rem 2rem; background: #111827; border-bottom: 1px solid #1f2937; }
+    main { padding: 2rem; max-width: 1080px; margin: 0 auto; }
+    a { color: #38bdf8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card { background: #1f2937; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
+    .button { background: #2563eb; border: none; border-radius: 8px; color: #fff; padding: 0.75rem 1.1rem; cursor: pointer; font-weight: 600; }
+    .button.secondary { background: #0ea5e9; }
+    input, textarea, select { width: 100%; padding: 0.65rem 0.75rem; border-radius: 8px; border: 1px solid #334155; background: #0b1325; color: #e2e8f0; }
+    label { display: block; margin-bottom: 0.35rem; font-weight: 600; }
+    form .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    ul { padding-left: 1.1rem; }
+    code { background: #0b1325; padding: 0.2rem 0.4rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:1.4rem;font-weight:800;">Arma 3 RHS DMR Helper</div>
+        <div style="color:#9ca3af;">Zero-install browser page: guides + scaffold download</div>
+      </div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a class="button secondary" href="#checklist">Checklist</a>
+        <a class="button secondary" href="#guides">Guides</a>
+        <a class="button" href="#scaffold">Generate Scaffold</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="grid" style="margin-bottom:1.5rem;">
+      <div class="card">
+        <h2>How to use</h2>
+        <p>Open this file directly in your browser (no Python, no server). Fill out the scaffold form and download a zip containing <code>config.cpp</code>, <code>model.cfg</code>, and assets under <code>@MyWeaponMod</code>. You can also drop in your own <code>.p3d</code> / texture files so they ship in the zip.</p>
+      </div>
+      <div class="card">
+        <h2>What you need</h2>
+        <p>Your converted <code>.p3d</code> models and <code>.paa</code> textures. Replace the placeholders in the downloaded zip, then pack the addon into a PBO and sign it.</p>
+      </div>
+      <div class="card">
+        <h2>Why RHS</h2>
+        <p>The templates wire RHS attachment slots (muzzle/scope/laser/underbarrel) so you get suppressor, optic, and bipod compatibility immediately.</p>
+      </div>
+    </section>
+
+    <section id="checklist" class="card">
+      <h2>Checklist</h2>
+      <ol id="steps"></ol>
+      <p style="margin-top:1rem;color:#9ca3af;">Tip: keep texture paths relative to avoid pink materials, and test in Virtual Arsenal with RHS loaded.</p>
+    </section>
+
+    <section class="card">
+      <h2>Asset prep walkthrough</h2>
+      <ul>
+        <li><strong>Convert the model:</strong> Use Blender to export FBX/OBJ, import in Object Builder, set <code>autocenter = 0</code>, <code>class = "Weapon"</code>, and add LODs (Resolution, Geometry, Fire Geometry, Memory, ViewPilot, Shadow).</li>
+        <li><strong>Memory points & proxies:</strong> Place <code>usti hlavne</code> / <code>konec hlavne</code> (muzzle/flash), <code>nabojnicestart</code> / <code>nabojniceend</code> (brass), and proxies for <code>TOP</code>, <code>SIDE</code>, <code>MUZZLE</code>, <code>UNDERBARREL</code>.</li>
+        <li><strong>PBR → Arma textures:</strong> Convert <code>BaseColor.png</code> → <code>_co.paa</code>; invert Roughness to gloss and pack into Normal alpha or create <code>_smdi.paa</code>; use the DirectX normal for <code>_nohq.paa</code>; keep AO as <code>_as.paa</code> if you use it in the RVMAT.</li>
+        <li><strong>RVMAT wiring:</strong> Point your material to the converted <code>_co</code>, <code>_nohq</code>, <code>_smdi</code>, optional <code>_as</code>; keep paths relative (e.g., <code>\my_mod\addons\steyr_dmr_rhs\data\rifle_dmr_co.paa</code>).</li>
+        <li><strong>Sanity check:</strong> In Buldozer/VR Arsenal, verify textures aren’t pink, muzzle flash/ejection points line up, and attachments seat correctly on rails.</li>
+      </ul>
+    </section>
+
+    <section id="guides" class="card">
+      <h2>Quick guides</h2>
+      <ul>
+        <li><strong>Model:</strong> Prepare geometry LODs, memory points (<code>usti hlavne</code>, <code>konec hlavne</code>, <code>nabojnicestart</code>, <code>nabojniceend</code>) and proxies for TOP/SIDE/MUZZLE/UNDERBARREL in Object Builder.</li>
+        <li><strong>Textures:</strong> Convert textures to <code>.paa</code> (<code>_co</code>, <code>_nohq</code>, <code>_smdi</code>) and reference them via an RVMAT with relative paths to avoid pink materials.</li>
+        <li><strong>Attachments:</strong> Use <code>rhs_western_rifle_muzzle_slot</code>, <code>rhs_western_rifle_scopes_slot_short</code>, <code>rhs_western_rifle_laser_slot</code>, and <code>rhs_western_rifle_underbarrel_slot</code> for plug-and-play RHS suppressors, optics, lasers, and bipods.</li>
+        <li><strong>Packaging:</strong> Pack your addon into a PBO (Addon Builder or Mikero), binarize models, sign the PBO, and include the <code>.bikey</code> in a <code>keys</code> folder before publishing.</li>
+      </ul>
+    </section>
+
+    <section id="scaffold" class="card">
+      <h2>Scaffold generator</h2>
+      <p>Provide the names you want baked into <code>config.cpp</code> and <code>model.cfg</code>. The download includes placeholders for the model, optic, textures, and UI icons.</p>
+      <form id="scaffold-form">
+        <div class="row">
+          <div>
+            <label for="addon_prefix">Addon prefix (e.g., \my_mod\addons)</label>
+            <input id="addon_prefix" name="addon_prefix" required>
+          </div>
+          <div>
+            <label for="addon_folder">Addon PBO folder</label>
+            <input id="addon_folder" name="addon_folder" required>
+          </div>
+        </div>
+        <div class="row" style="margin-top:1rem;">
+          <div>
+            <label for="weapon_class">Weapon classname</label>
+            <input id="weapon_class" name="weapon_class" required>
+          </div>
+          <div>
+            <label for="weapon_name">Weapon display name</label>
+            <input id="weapon_name" name="weapon_name" required>
+          </div>
+          <div>
+            <label for="author">Author</label>
+            <input id="author" name="author" required>
+          </div>
+        </div>
+        <div class="row" style="margin-top:1rem;">
+          <div>
+            <label for="magazine_wells">Magazine wells (comma-separated)</label>
+            <input id="magazine_wells" name="magazine_wells">
+          </div>
+          <div>
+            <label for="magazines">Magazines (comma-separated classnames)</label>
+            <input id="magazines" name="magazines">
+          </div>
+        </div>
+        <div class="row" style="margin-top:1rem;">
+          <div>
+            <label for="model_filename">Model filename</label>
+            <input id="model_filename" name="model_filename">
+          </div>
+          <div>
+            <label for="weapon_icon">Weapon icon filename</label>
+            <input id="weapon_icon" name="weapon_icon">
+          </div>
+        </div>
+        <div class="row" style="margin-top:1rem;">
+          <div>
+            <label for="optic_class">Optic classname</label>
+            <input id="optic_class" name="optic_class">
+          </div>
+          <div>
+            <label for="optic_name">Optic display name</label>
+            <input id="optic_name" name="optic_name">
+          </div>
+        </div>
+        <div class="row" style="margin-top:1rem;">
+          <div>
+            <label for="optic_model">Optic model filename</label>
+            <input id="optic_model" name="optic_model">
+          </div>
+          <div>
+            <label for="optic_icon">Optic icon filename</label>
+            <input id="optic_icon" name="optic_icon">
+          </div>
+        </div>
+        <div style="margin-top:1rem;">
+          <label for="required_addons">Required addons (comma-separated)</label>
+          <input id="required_addons" name="required_addons">
+        </div>
+        <div style="margin-top:1.5rem;">
+          <h3 style="margin:0 0 0.25rem 0;">Optional: include your assets in the zip</h3>
+          <p style="color:#9ca3af; margin-top:0;">Drop in converted files to bundle them. If you skip these, empty placeholders are created.</p>
+          <div class="row" style="margin-top:0.75rem;">
+            <div>
+              <label for="model_file">Weapon model (.p3d)</label>
+              <input type="file" id="model_file" accept=".p3d,.fbx,.obj,.blend">
+              <small style="color:#9ca3af;">Use the final .p3d exported from Object Builder.</small>
+            </div>
+            <div>
+              <label for="optic_file">Optic model (.p3d)</label>
+              <input type="file" id="optic_file" accept=".p3d,.fbx,.obj,.blend">
+              <small style="color:#9ca3af;">Optional if your optic is separate.</small>
+            </div>
+          </div>
+          <div class="row" style="margin-top:0.75rem;">
+            <div>
+              <label for="color_file">BaseColor / diffuse</label>
+              <input type="file" id="color_file" accept=".paa,.png,.tga,.tif">
+            </div>
+            <div>
+              <label for="normal_file">Normal (DirectX preferred for _nohq)</label>
+              <input type="file" id="normal_file" accept=".paa,.png,.tga,.tif">
+            </div>
+          </div>
+          <div class="row" style="margin-top:0.75rem;">
+            <div>
+              <label for="roughness_file">Roughness / gloss source</label>
+              <input type="file" id="roughness_file" accept=".paa,.png,.tga,.tif">
+            </div>
+            <div>
+              <label for="metalness_file">Metalness (for _smdi packing)</label>
+              <input type="file" id="metalness_file" accept=".paa,.png,.tga,.tif">
+            </div>
+          </div>
+          <div class="row" style="margin-top:0.75rem;">
+            <div>
+              <label for="ao_file">Ambient Occlusion (optional)</label>
+              <input type="file" id="ao_file" accept=".paa,.png,.tga,.tif">
+            </div>
+            <div>
+              <label for="icon_weapon_file">Weapon UI icon</label>
+              <input type="file" id="icon_weapon_file" accept=".paa,.png">
+            </div>
+          </div>
+          <div class="row" style="margin-top:0.75rem;">
+            <div>
+              <label for="icon_optic_file">Optic UI icon</label>
+              <input type="file" id="icon_optic_file" accept=".paa,.png">
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+          <button class="button" type="submit">Download scaffold zip</button>
+          <p style="color:#9ca3af;margin:0;">Includes <code>config.cpp</code>, <code>model.cfg</code>, placeholder <code>.p3d</code>/<code>.paa</code>/<code>.rvmat</code> files.</p>
+        </div>
+      </form>
+    </section>
+  </main>
+  <script src="./scaffold.js"></script>
+</body>
+</html>
